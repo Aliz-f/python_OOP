@@ -1,10 +1,11 @@
 # python_OOP
-Python Object-Oriented Tutorials. 
+Python Object-Oriented Tutorials.
+
 In this series, we will be learning how to create classes in Python, and also the best practices for working with these classes. We will go over class/instance variables, inheritance, getters/setters, and much more.
 
 Reference:```https://www.youtube.com/playlist?list=PL-osiE80TeTsqhIuOqKhwlXsIBIdSeYtc```
 
-for create class in python :
+For create class in python :
 ```python
 class Employee:
 
@@ -15,12 +16,12 @@ class Employee:
         self.pay = pay
 ```
 
-regular methods automatically pass the instance as first argument, with ```self```: 
+Regular methods automatically pass the instance as first argument, with ```self```: 
 ```python
     def fullname(self):
         return '{} {}'.format(self.first, self.last)
 ```
-add class variable, we can use it as variable for each instance or class method:
+Add class variable, we can use it as variable for each instance or class method:
 ```python
 class Employee:
 
@@ -41,7 +42,7 @@ class Employee:
         
 ```
 
-classmethods automatically pass the class as first argument, with ```cls```:
+Classmethods automatically pass the class as first argument, with ```cls```:
 ```python
     @classmethod
     def set_raise_amt(cls, amount):
@@ -88,4 +89,141 @@ import datetime
 my_date = datetime.date(2016, 7, 11)
 
 print(Employee.is_workday(my_date))
+```
+
+# Inheritance - Creating Subclasses
+parent class :
+```python
+class Employee:
+
+    raise_amt = 1.04
+
+    def __init__(self, first, last, pay):
+        self.first = first
+        self.last = last
+        self.email = first + '.' + last + '@email.com'
+        self.pay = pay
+
+    def fullname(self):
+        return '{} {}'.format(self.first, self.last)
+
+    def apply_raise(self):
+        self.pay = int(self.pay * self.raise_amt)
+```
+
+create instance from Employee class:
+```python
+
+dev_1 = Employee('Corey', 'Schafer', 50000)
+dev_2 = Employee('Test', 'Employee', 60000)
+
+print(dev_1.email)
+print(dev_2.email)
+
+```
+Child class ```Developer```: 
+```python
+class Developer(Employee):
+    raise_amt = 1.10
+
+    def __init__(self, first, last, pay, prog_lang):
+        super().__init__(first, last, pay)
+        self.prog_lang = prog_lang
+```
+
+create instance from ```Developer``` class:
+```python
+dev_1 = Developer('Corey', 'Schafer', 50000, 'Python')
+dev_2 = Developer('Test', 'Employee', 60000, 'Java')
+
+print(issubclass(Developer, Employee))
+print(isinstance(dev_1, Developer))
+print(isinstance(dev_1, Employee))
+```
+Child Class ```Manager```:
+```python
+class Manager(Employee):
+
+    def __init__(self, first, last, pay, employees=None):
+        super().__init__(first, last, pay)
+        if employees is None:
+            self.employees = []
+        else:
+            self.employees = employees
+
+    def add_emp(self, emp):
+        if emp not in self.employees:
+            self.employees.append(emp)
+
+    def remove_emp(self, emp):
+        if emp in self.employees:
+            self.employees.remove(emp)
+
+    def print_emps(self):
+        for emp in self.employees:
+            print('-->', emp.fullname())
+```
+Create instance from ```Manager``` class:
+```python
+mgr_1 = Manager('Sue', 'Smith', 90000, [dev_1])
+
+print(mgr_1.email)
+
+mgr_1.add_emp(dev_2)
+mgr_1.remove_emp(dev_2)
+
+mgr_1.print_emps()
+
+print(issubclass(Manager, Employee))
+print(isinstance(mgr_1, Developer))
+print(isinstance(mgr_1, Employee))
+print(isinstance(mgr_1, Manager))
+```
+
+# Dunder methods
+These methods allow us to emulate built-in types or implement operator overloading. These can be extremely powerful if used correctly.
+
+Reference : ```https://docs.python.org/3/reference/datamodel.html#special-method-names```
+
+```Employee``` class :
+```python
+class Employee:
+
+    raise_amt = 1.04
+
+    def __init__(self, first, last, pay):
+        self.first = first
+        self.last = last
+        self.email = first + '.' + last + '@email.com'
+        self.pay = pay
+
+    def fullname(self):
+        return '{} {}'.format(self.first, self.last)
+
+    def apply_raise(self):
+        self.pay = int(self.pay * self.raise_amt)
+
+    def __repr__(self):
+        return "Employee('{}', '{}', {})".format(self.first, self.last, self.pay)
+
+    def __str__(self):
+        return '{} - {}'.format(self.fullname(), self.email)
+
+    def __add__(self, other):
+        return self.pay + other.pay
+
+    def __len__(self):
+        return len(self.fullname())
+```
+create instance from ```Employee``` and use dunder:
+
+```python
+emp_1 = Employee('Corey', 'Schafer', 50000)
+emp_2 = Employee('Test', 'Employee', 60000)
+
+print(emp_1.__str__)
+print(emp_2.__repr__)
+print(emp_1 + emp_2)
+print(len(emp_1))
+
 ```
